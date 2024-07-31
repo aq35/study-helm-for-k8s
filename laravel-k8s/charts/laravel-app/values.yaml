@@ -1,0 +1,74 @@
+replicaCount: 1
+
+image:
+  repository: laravel-app
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+
+resources: {}
+
+autoscaling:
+  enabled: false
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+nginx:
+  image:
+    repository: nginx
+    tag: alpine
+  config:
+    nginx.conf: |
+      server {
+          listen 80;
+          index index.php index.html;
+          error_log  /var/log/nginx/error.log;
+          access_log /var/log/nginx/access.log;
+          root /var/www/public;
+          location ~ \.php$ {
+              try_files  =404;
+              fastcgi_split_path_info ^(.+\.php)(/.+)$;
+              fastcgi_pass 127.0.0.1:9000;
+              fastcgi_index index.php;
+              include fastcgi_params;
+              fastcgi_param SCRIPT_FILENAME ;
+              fastcgi_param PATH_INFO ;
+          }
+          location / {
+              try_files  / /index.php?;
+              gzip_static on;
+          }
+      }
+
+mysql:
+  enabled: true
+  auth:
+    database: laravel
+    username: laravel
+    password: secret
+    rootPassword: secret

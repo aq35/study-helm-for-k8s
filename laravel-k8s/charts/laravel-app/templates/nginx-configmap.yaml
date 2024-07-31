@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "laravel-app.fullname" . }}-nginx-config
+  labels:
+    {{- include "laravel-app.labels" . | nindent 4 }}
+data:
+  nginx.conf: |
+    {{- .Values.nginx.config.nginx.conf | nindent 4 }}
